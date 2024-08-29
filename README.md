@@ -3,6 +3,8 @@
 
 Screen recorder plugin for Flutter. Supports IOS and Android devices.It does not work on the IOS emulator!!!!
 
+## Who made it? It's Eren ;)
+
 
 [![pubdev](https://img.shields.io/badge/pub-de__screen__recorder-blue)](https://pub.dev/packages/ed_screen_recorder)
 
@@ -124,9 +126,6 @@ Simple, fast generation of RFC4122 UUIDs. [URL](https://pub.dev/packages/uuid)
 Thanks my friends Mehmet for contributed.
 
 Author: endmr11 [!["github"](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/endmr11)
-
-mskayali [!["github"](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mskayali) 
-
 
 
 
