@@ -50,4 +50,9 @@ class RecordOutput {
         "startdate": startDate,
         "enddate": endDate,
       };
+
+  @override
+  String toString() {
+    return 'RecordOutput(success: $success, file: $file, isProgress: $isProgress, eventName: $eventName, message: $message, videoHash: $videoHash, startDate: $startDate, endDate: $endDate)';
+  }
 }
