@@ -19,16 +19,6 @@ class RecordOutput {
     required this.checkStatus, // Thêm checkStatus
   });
 
-  bool success;
-  File file;
-  bool isProgress;
-  String eventName;
-  String? message;
-  String videoHash;
-  int startDate;
-  int? endDate;
-  String? checkStatus; // Thêm checkStatus
-
   factory RecordOutput.fromJson(Map<String, dynamic> json) {
     return RecordOutput(
       success: json["success"],
@@ -42,6 +32,16 @@ class RecordOutput {
       checkStatus: json['checkStatus'], // Thêm checkStatus
     );
   }
+
+  String? checkStatus; // Thêm checkStatus
+  int? endDate;
+  String eventName;
+  File file;
+  bool isProgress;
+  String? message;
+  int startDate;
+  bool success;
+  String videoHash;
 
   Map<String, dynamic> toJson() => {
         "success": success,

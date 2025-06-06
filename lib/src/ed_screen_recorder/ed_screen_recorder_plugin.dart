@@ -9,7 +9,7 @@ import '../models/record_output_model.dart';
 
 class EdScreenRecorder {
   static const MethodChannel _channel = MethodChannel('ed_screen_recorder');
-
+  // trunghaudinh
   Future<RecordOutput> startRecordScreen(
       {required String fileName,
       String? dirPathToSave,
