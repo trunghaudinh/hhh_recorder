@@ -35,13 +35,12 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * EdScreenRecorderPlugin
  */
 public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler,
-        HBRecorderListener,PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
+        HBRecorderListener, PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
 
     private FlutterPluginBinding flutterPluginBinding;
     private ActivityPluginBinding activityPluginBinding;
@@ -80,18 +79,11 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
         recentResult = null;
     }
 
-    public static void registerWith(Registrar registrar) {
-        final EdScreenRecorderPlugin instance = new EdScreenRecorderPlugin();
-        instance.setupChannels(registrar.messenger(), registrar.activity());
-        registrar.addActivityResultListener(instance);
-    }
-
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         this.flutterPluginBinding = binding;
         hbRecorder = new HBRecorder(flutterPluginBinding.getApplicationContext(), this);
         HBRecorderCodecInfo hbRecorderCodecInfo = new HBRecorderCodecInfo();
-
     }
 
     @Override
@@ -102,11 +94,14 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
         this.activityPluginBinding = binding;
+        binding.addActivityResultListener(this);
+        binding.addRequestPermissionsResultListener(this);
         setupChannels(flutterPluginBinding.getBinaryMessenger(), binding.getActivity());
     }
 
     @Override
     public void onDetachedFromActivityForConfigChanges() {
+        this.activityPluginBinding = null;
     }
 
     @Override
@@ -116,6 +111,7 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
 
     @Override
     public void onDetachedFromActivity() {
+        this.activityPluginBinding = null;
     }
 
     @Override
@@ -149,7 +145,6 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
                                     new String[]{Manifest.permission.RECORD_AUDIO},
                                     333);
                         } else {
-
                             micPermission = true;
                         }
                     } else {
@@ -212,11 +207,17 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
             } else {
                 micPermission = false;
             }
+            if (micPermission && mediaPermission) {
+                success = startRecordingScreen();
+            }
         } else if (requestCode == 444) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mediaPermission = true;
             } else {
                 mediaPermission = false;
+            }
+            if (micPermission && mediaPermission) {
+                success = startRecordingScreen();
             }
         }
         return true;
@@ -235,9 +236,6 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
     }
 
     private void setupChannels(BinaryMessenger messenger, Activity activity) {
-        if (activityPluginBinding != null) {
-            activityPluginBinding.addActivityResultListener(this);
-        }
         this.activity = activity;
         MethodChannel channel = new MethodChannel(messenger, "ed_screen_recorder");
         channel.setMethodCallHandler(this);
@@ -245,7 +243,6 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
 
     @Override
     public void HBRecorderOnStart() {
-
         Log.e("Video Start:", "Start called");
         Map<Object, Object> dataMap = new HashMap<Object, Object>();
         dataMap.put("success", success);
@@ -280,7 +277,7 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
             dataMap.put("file", generateFileName(fileName, addTimeCode) + "." + fileExtension);
         }
         dataMap.put("eventname", "stopRecordScreen");
-        dataMap.put("message", "Paused Video");
+        dataMap.put("message", "Completed Video");
         dataMap.put("videohash", videoHash);
         dataMap.put("startdate", startDate);
         dataMap.put("enddate", endDate);
@@ -327,7 +324,6 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
     }
 
     private Boolean startRecordingScreen() {
-
         try {
             hbRecorder.enableCustomSettings();
             MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) flutterPluginBinding
@@ -370,7 +366,6 @@ public class EdScreenRecorderPlugin implements FlutterPlugin, ActivityAware, Met
             filePath = flutterPluginBinding.getApplicationContext().getExternalCacheDir().getAbsolutePath() + "/"
                     + generateFileName(fileName, addTimeCode);
         }
-
     }
 
     private String generateFileName(String fileName, boolean addTimeCode) {

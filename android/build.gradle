@@ -23,7 +23,10 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    namespace 'com.ed_screen_recorder.ed_screen_recorder'
+    if (project.android.hasProperty("namespace")) {
+        namespace = "com.ed_screen_recorder.ed_screen_recorder"
+    }
+
     compileSdkVersion 31
 
     compileOptions {
@@ -37,6 +40,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.HBiSoft:HBRecorder:3.0.1'
+    implementation 'com.github.HBiSoft:HBRecorder:3.0.9'
     implementation 'androidx.appcompat:appcompat:1.4.1'
 }
